@@ -93,6 +93,9 @@ src-$(CONFIG_HAVE_GPIO_SDIO) += stm32/sdio.c
 src-$(CONFIG_SERIAL_BRIDGE) += stm32/serial_bridge.c generic/serial_bridge_irq.c
 
 
+src-$(CONFIG_SERIAL_BRIDGE) += stm32/serial_bridge.c generic/serial_bridge_irq.c
+
+
 # Binary output file rules
 target-y += $(OUT)klipper.bin
 
