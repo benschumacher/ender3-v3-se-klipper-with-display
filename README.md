@@ -117,18 +117,6 @@ Features that are not available are shown as a pop-up:
 ### Printer is not flashing the .bin from the releases or built from source
 Please check if you are renaming the binaries between flashes as mentioned in the section [Using pre-built binaries](#using-pre-built-binaries)
 
-The Klipper firmware controls 3d-Printers. It combines the power of a
-general purpose computer with one or more micro-controllers. See the
-[features document](https://www.klipper3d.org/Features.html) for more
-information on why you should use the Klipper software.
-
-Start by [installing Klipper software](https://www.klipper3d.org/Installation.html).
-
-Klipper software is Free Software. See the [license](COPYING) or read
-the [documentation](https://www.klipper3d.org/Overview.html). We
-depend on the generous support from our
-[sponsors](https://www.klipper3d.org/Sponsors.html).
-
 ### After installing this project my display went crazy!
 Check if you installed the **E3V3SE display firmware 1.0.6** as mentioned in section [Important](#important)
 
@@ -148,3 +136,4 @@ https://github.com/odwdinc/DWIN_T5UIC1_LCD
 https://github.com/jpcurti/E3V3SE_display_klipper
 
 https://github.com/0xD34D/klipper_ender3_v3_se
+
