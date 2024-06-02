@@ -136,4 +136,3 @@ https://github.com/odwdinc/DWIN_T5UIC1_LCD
 https://github.com/jpcurti/E3V3SE_display_klipper
 
 https://github.com/0xD34D/klipper_ender3_v3_se
-
