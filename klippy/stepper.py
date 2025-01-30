@@ -58,6 +58,8 @@ class MCU_stepper:
         if short and self._name.startswith('stepper_'):
             return self._name[8:]
         return self._name
+    def get_pin_info(self):
+        return self._dir_pin, self._step_pin, self._invert_dir, self._invert_step
     def units_in_radians(self):
         # Returns true if distances are in radians instead of millimeters
         return self._units_in_radians
@@ -403,7 +405,7 @@ class PrinterRail:
             changed_invert = pin_params['invert'] != endstop['invert']
             changed_pullup = pin_params['pullup'] != endstop['pullup']
             if changed_invert or changed_pullup:
-                raise error("Pinter rail %s shared endstop pin %s "
+                raise error("Printer rail %s shared endstop pin %s "
                             "must specify the same pullup/invert settings" % (
                                 self.get_name(), pin_name))
         mcu_endstop.add_stepper(stepper)
