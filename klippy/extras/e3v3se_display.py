@@ -571,6 +571,7 @@ class E3v3seDisplay:
 
         # register for key events
         E3V3SEMenuKeys(config, self.key_event)
+        self.last_key_event_time = -1
 
         self.serial_bridge = E3V3SEPrinterSerialBridge(self.config)
 
@@ -584,7 +585,10 @@ class E3v3seDisplay:
         self._update_interval = 1
         self._update_timer = self.reactor.register_timer(self.EachMomentUpdate)
 
-    def key_event(self, key, eventtime):
+    def key_event(self, key, event_time):
+        if self.last_key_event_time == -1: 
+            self.last_key_event_time = event_time
+            
         if key == 'click':
             self.encoder_state = self.ENCODER_DIFF_ENTER
         elif key == 'long_click':
@@ -593,12 +597,19 @@ class E3v3seDisplay:
             self.encoder_state = self.ENCODER_DIFF_CCW
         elif key == 'down':
             self.encoder_state = self.ENCODER_DIFF_CW
-        self.encoder_has_data()
-
+        
+        self.encoder_has_data(event_time)
+        self.last_key_event_time = event_time
+        
     def get_encoder_state(self):
         last_state = self.encoder_state
         self.encoder_state = self.ENCODER_DIFF_NO
         return last_state
+
+    def get_encoder_multiplier(self, event_time):
+        fast_interval = 0.150 # 150ms
+        elapsed = event_time - self.last_key_event_time
+        return 10 if fast_interval >= elapsed > 0 else 1
 
     def _handle_serial_bridge_response(self, data):
         byte_debug = ' '.join(['0x{:02x}'.format(byte) for byte in data])
@@ -1396,11 +1407,13 @@ class E3v3seDisplay:
                 )
                 self.EncoderRateLimit = False
 
-    def HMI_Move_X(self):
+    def HMI_Move_X(self, event_time):
         """
         Handles the X axis move logic based on the encoder input.
         """
         encoder_state = self.get_encoder_state()
+        multiplier = self.get_encoder_multiplier(event_time)
+        
         if encoder_state == self.ENCODER_DIFF_NO:
             return
         elif encoder_state == self.ENCODER_DIFF_ENTER:
@@ -1424,9 +1437,9 @@ class E3v3seDisplay:
 
             return
         elif encoder_state == self.ENCODER_DIFF_CW:
-            self.pd.HMI_ValueStruct.Move_X_scale += 1
+            self.pd.HMI_ValueStruct.Move_X_scale += multiplier
         elif encoder_state == self.ENCODER_DIFF_CCW:
-            self.pd.HMI_ValueStruct.Move_X_scale -= 1
+            self.pd.HMI_ValueStruct.Move_X_scale -= multiplier
 
         if (
             self.pd.HMI_ValueStruct.Move_X_scale
@@ -1459,11 +1472,13 @@ class E3v3seDisplay:
             self.pd.HMI_ValueStruct.Move_X_scale,
         )
 
-    def HMI_Move_Y(self):
+    def HMI_Move_Y(self, event_time):
         """
         Handles the Y axis move logic based on the encoder input.
         """
         encoder_state = self.get_encoder_state()
+        multiplier = self.get_encoder_multiplier(event_time)
+        
         if encoder_state == self.ENCODER_DIFF_NO:
             return
         elif encoder_state == self.ENCODER_DIFF_ENTER:
@@ -1487,9 +1502,9 @@ class E3v3seDisplay:
 
             return
         elif encoder_state == self.ENCODER_DIFF_CW:
-            self.pd.HMI_ValueStruct.Move_Y_scale += 1
+            self.pd.HMI_ValueStruct.Move_Y_scale += multiplier
         elif encoder_state == self.ENCODER_DIFF_CCW:
-            self.pd.HMI_ValueStruct.Move_Y_scale -= 1
+            self.pd.HMI_ValueStruct.Move_Y_scale -= multiplier
 
         if (
             self.pd.HMI_ValueStruct.Move_Y_scale
@@ -1522,11 +1537,13 @@ class E3v3seDisplay:
             self.pd.HMI_ValueStruct.Move_Y_scale,
         )
 
-    def HMI_Move_Z(self):
+    def HMI_Move_Z(self, event_time):
         """
         Handles the Z axis move logic based on the encoder input.
         """
         encoder_state = self.get_encoder_state()
+        multiplier = self.get_encoder_multiplier(event_time)
+            
         if encoder_state == self.ENCODER_DIFF_NO:
             return
         elif encoder_state == self.ENCODER_DIFF_ENTER:
@@ -1549,9 +1566,9 @@ class E3v3seDisplay:
 
             return
         elif encoder_state == self.ENCODER_DIFF_CW:
-            self.pd.HMI_ValueStruct.Move_Z_scale += 1
+            self.pd.HMI_ValueStruct.Move_Z_scale += multiplier
         elif encoder_state == self.ENCODER_DIFF_CCW:
-            self.pd.HMI_ValueStruct.Move_Z_scale -= 1
+            self.pd.HMI_ValueStruct.Move_Z_scale -= multiplier
 
         if (
             self.pd.HMI_ValueStruct.Move_Z_scale
@@ -1584,12 +1601,14 @@ class E3v3seDisplay:
             self.pd.HMI_ValueStruct.Move_Z_scale,
         )
 
-    def HMI_Move_E(self):
+    def HMI_Move_E(self, event_time):
         """
         Handles the Extruder move logic based on the encoder input.
         """
         self.pd.last_E_scale = 0
         encoder_state = self.get_encoder_state()
+        multiplier = self.get_encoder_multiplier(event_time)
+        
         if encoder_state == self.ENCODER_DIFF_NO:
             return
 
@@ -1609,11 +1628,10 @@ class E3v3seDisplay:
                 self.pd.HMI_ValueStruct.Move_E_scale,
             )
             self.pd.moveAbsolute("E", self.pd.current_position.e, 300)
-
         elif encoder_state == self.ENCODER_DIFF_CW:
-            self.pd.HMI_ValueStruct.Move_E_scale += 1
+            self.pd.HMI_ValueStruct.Move_E_scale += multiplier
         elif encoder_state == self.ENCODER_DIFF_CCW:
-            self.pd.HMI_ValueStruct.Move_E_scale -= 1
+            self.pd.HMI_ValueStruct.Move_E_scale -= multiplier
 
         if (self.pd.HMI_ValueStruct.Move_E_scale - self.pd.last_E_scale) > (
             self.pd.EXTRUDE_MAXLENGTH
@@ -4070,7 +4088,7 @@ class E3v3seDisplay:
 
         return eventtime + self._update_interval
 
-    def encoder_has_data(self):
+    def encoder_has_data(self, event_time):
         if self.checkkey == self.MainMenu:
             self.HMI_MainMenu()
         elif self.checkkey == self.SelectFile:
@@ -4106,13 +4124,13 @@ class E3v3seDisplay:
         elif self.checkkey == self.Step:
             self.HMI_Step()
         elif self.checkkey == self.Move_X:
-            self.HMI_Move_X()
+            self.HMI_Move_X(event_time)
         elif self.checkkey == self.Move_Y:
-            self.HMI_Move_Y()
+            self.HMI_Move_Y(event_time)
         elif self.checkkey == self.Move_Z:
-            self.HMI_Move_Z()
+            self.HMI_Move_Z(event_time)
         elif self.checkkey == self.Extruder:
-            self.HMI_Move_E()
+            self.HMI_Move_E(event_time)
         elif self.checkkey == self.ETemp:
             self.HMI_ETemp()
         elif self.checkkey == self.Homeoffset:
