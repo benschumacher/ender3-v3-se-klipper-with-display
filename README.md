@@ -1,6 +1,26 @@
-[![Build Firmware](https://github.com/Atomique13/ender3-v3-se-klipper-with-display/actions/workflows/build-firmware.yaml/badge.svg)](https://github.com/Atomique13/ender3-v3-se-klipper-with-display/actions/workflows/build-firmware.yaml)
+Welcome to the Klipper project!
+
+[![Klipper](docs/img/klipper-logo-small.png)](https://www.klipper3d.org/)
+
+https://www.klipper3d.org/
+
+The Klipper firmware controls 3d-Printers. It combines the power of a
+general purpose computer with one or more micro-controllers. See the
+[features document](https://www.klipper3d.org/Features.html) for more
+information on why you should use the Klipper software.
+
+Start by [installing Klipper software](https://www.klipper3d.org/Installation.html).
+
+Klipper software is Free Software. See the [license](COPYING) or read
+the [documentation](https://www.klipper3d.org/Overview.html). We
+depend on the generous support from our
+[sponsors](https://www.klipper3d.org/Sponsors.html).
+
+---
 
 # Modified Klipper for the Creality Ender 3 V3 SE with display support 
+
+[![Build Firmware](https://github.com/Atomique13/ender3-v3-se-klipper-with-display/actions/workflows/build-firmware.yaml/badge.svg)](https://github.com/Atomique13/ender3-v3-se-klipper-with-display/actions/workflows/build-firmware.yaml)
 
 This is a modified [Klipper](https://www.klipper3d.org/) that supports the original **Creality E3V3SE (Ender 3 V3 SE)** display by combining [E4ST2W3ST serial bridge](https://github.com/Klipper3d/klipper/commit/6469418d73be6743a7130b50fdb5a57d311435ca) with the [ender 3 v3 se display interface](https://github.com/jpcurti/E3V3SE_display_klipper) to make it possible to use the printers display cable without any hardware modification. This repository is forked from [0XD34Ds klipper config](https://github.com/0xD34D/klipper_ender3_v3_se), but its commits can be applied separately from any other configuration. 
  
